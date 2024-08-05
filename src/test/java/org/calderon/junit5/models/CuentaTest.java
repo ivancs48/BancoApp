@@ -55,7 +55,6 @@ class CuentaTest {
         assertThrows(DineroInsuficienteException.class, () -> cuenta.debito(new BigDecimal("150")));
     }
 
-
     @Test
     void testTransferirDinero() {
         Cuenta cuenta1 = new Cuenta("Ivan", new BigDecimal("1000"));
@@ -72,5 +71,25 @@ class CuentaTest {
         assertEquals(500, cuenta1.getSaldo().intValue());
         assertEquals(500, cuenta2.getSaldo().intValue());
     }
+
+    @Test
+    void testRelacionBancoCuenta() {
+        Cuenta cuenta1 = new Cuenta("Ivan", new BigDecimal("1000"));
+        Cuenta cuenta2 = new Cuenta("Jhon doe", new BigDecimal("0"));
+
+        Banco banco = new Banco();
+        banco.setNombre("Mi banco");
+        banco.addCuenta(cuenta1);
+        banco.addCuenta(cuenta2);
+
+        try {
+            banco.trasnferir(cuenta1, cuenta2, new BigDecimal("500"));
+        } catch (DineroInsuficienteException e) {
+            System.out.println("Saldo insuficiente");
+        }
+        assertEquals(2, banco.getCuentas().size());
+        assertEquals("Mi banco", cuenta1.getBanco().getNombre());
+    }
+
 
 }

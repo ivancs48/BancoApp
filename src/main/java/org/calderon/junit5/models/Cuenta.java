@@ -6,6 +6,7 @@ import org.calderon.junit5.exceptions.DineroInsuficienteException;
 public class Cuenta {
     private String persona;
     private BigDecimal saldo;
+    private Banco banco;
 
     public Cuenta(String persona, BigDecimal saldo) {
         this.persona = persona;
@@ -37,6 +38,14 @@ public class Cuenta {
 
     public void credito(BigDecimal monto) {
         this.saldo = this.saldo.add(monto);
+    }
+
+    public Banco getBanco() {
+        return banco;
+    }
+
+    public void setBanco(Banco banco) {
+        this.banco = banco;
     }
 
     @Override

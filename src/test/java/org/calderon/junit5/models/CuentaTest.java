@@ -15,7 +15,7 @@ class CuentaTest {
     Cuenta cuenta;
 
     @BeforeEach
-    void initCuenta(){
+    void initCuenta() {
         System.out.println("Inicializado cuenta");
         this.cuenta = new Cuenta("Ivan", new BigDecimal("10000.253"));
     }
@@ -117,92 +117,110 @@ class CuentaTest {
         assertEquals("Mi banco", cuenta1.getBanco().getNombre());
     }
 
-    @Test
-    @DisplayName("Prueba solo windows")
-    @EnabledOnOs(OS.WINDOWS)
-    void testSoloWindows() {
+    @Nested
+    @DisplayName("Test de windows")
+    class SystemaOperativo {
+        @Test
+        @DisplayName("Prueba solo windows")
+        @EnabledOnOs(OS.WINDOWS)
+        void testSoloWindows() {
 
+        }
+
+        @Test
+        @DisplayName("Prueba no habilitada en windows")
+        @DisabledOnOs(OS.WINDOWS)
+        void desactivadoEnWindows() {
+
+        }
+
+        @Test
+        @DisplayName("Prueba no windows")
+        @EnabledOnOs({OS.LINUX, OS.MAC})
+        void testNoWindows() {
+
+        }
     }
 
-    @Test
-    @DisplayName("Prueba no habilitada en windows")
-    @DisabledOnOs(OS.WINDOWS)
-    void desactivadoEnWindows() {
+    @Nested
+    @DisplayName("Test de la version de java")
+    class JavaVersionTest {
+        @Test
+        @DisplayName("Solo java 20")
+        @EnabledOnJre(JRE.JAVA_20)
+        void desactivaddoEnWindows() {
 
+        }
     }
 
-    @Test
-    @DisplayName("Prueba no windows")
-    @EnabledOnOs({OS.LINUX, OS.MAC})
-    void testNoWindows() {
+    @Nested
+    @DisplayName("Test de Propiedades")
+    class SystemPropiertis {
 
-    }
+        @Test
+        @DisplayName("Imprimir propiedades")
+        void imprimirPropiedades() {
+            System.getProperties().forEach((k, v) -> System.out.println(k + ": " + v));
+        }
 
-    @Test
-    @DisplayName("Solo java 20")
-    @EnabledOnJre(JRE.JAVA_20)
-    void desactivaddoEnWindows() {
+        @Test
+        @DisplayName("test de propiedad")
+        @EnabledIfSystemProperty(named = "user.language", matches = "en")
+        void testConPropiedad() {
 
-    }
+        }
 
-    @Test
-    @DisplayName("Imprimir propiedades")
-    void imprimirPropiedades() {
-        System.getProperties().forEach((k, v) -> System.out.println(k + ": " + v));
-    }
+        @Test
+        @DisplayName("test no arch32")
+        @DisabledIfSystemProperty(named = "os.arch", matches = ".*32")
+        void testPropiedad32() {
 
-    @Test
-    @DisplayName("test de propiedad")
-    @EnabledIfSystemProperty(named = "user.language", matches = "en")
-    void testConPropiedad() {
+        }
 
-    }
-
-    @Test
-    @DisplayName("test no arch32")
-    @DisabledIfSystemProperty(named = "os.arch", matches = ".*32")
-    void testPropiedad32() {
-
-    }
-
-    @Test
-    @DisplayName("Imprimier datos de ambiente")
-    void imprimirVariablesAmbiente() {
-        System.getenv().forEach((k, v) -> System.out.println(k + ": " + v));
-    }
-
-
-    @Test
-    @DisplayName("Test procesadores8")
-    @EnabledIfEnvironmentVariable(named = "NUMBER_OF_PROCESSORS", matches = "8")
-    void testAmbienteProcesadores(){
-
-    }
-
-    @Test
-    @DisplayName("Valida propiedad programacion")
-    void creditoCuentaJava20() {
-        boolean isJava20 = "20.0.1".equals(System.getProperty("java.version"));
-        assumeTrue(isJava20);
-        cuenta.setSaldo(new BigDecimal("1000.923"));
-        cuenta.credito(new BigDecimal("100"));
-        assertEquals("1100.923", cuenta.getSaldo().toPlainString());
-    }
-
-    @Test
-    @DisplayName("Valida propiedad programacion 2")
-    void creditoCuentaJava20_2() {
-        boolean isJava21 = "21.0.1".equals(System.getProperty("java.version"));
-        assumingThat(isJava21, () -> {
-            System.out.println("Ingresa validacion de java");
+        @Test
+        @DisplayName("Valida propiedad programacion")
+        void creditoCuentaJava20() {
+            boolean isJava20 = "20.0.1".equals(System.getProperty("java.version"));
+            assumeTrue(isJava20);
             cuenta.setSaldo(new BigDecimal("1000.923"));
-            cuenta.credito(new BigDecimal("200"));
-            assertEquals(1200.923, cuenta.getSaldo().doubleValue());
-        });
-        System.out.println("Realiza proceso despues de validacion java");
-        cuenta.setSaldo(new BigDecimal("1000.923"));
-        cuenta.credito(new BigDecimal("100"));
-        assertEquals("1100.923", cuenta.getSaldo().toPlainString());
+            cuenta.credito(new BigDecimal("100"));
+            assertEquals("1100.923", cuenta.getSaldo().toPlainString());
+        }
+
+        @Test
+        @DisplayName("Valida propiedad programacion 2")
+        void creditoCuentaJava20_2() {
+            boolean isJava21 = "21.0.1".equals(System.getProperty("java.version"));
+            assumingThat(isJava21, () -> {
+                System.out.println("Ingresa validacion de java");
+                cuenta.setSaldo(new BigDecimal("1000.923"));
+                cuenta.credito(new BigDecimal("200"));
+                assertEquals(1200.923, cuenta.getSaldo().doubleValue());
+            });
+            System.out.println("Realiza proceso despues de validacion java");
+            cuenta.setSaldo(new BigDecimal("1000.923"));
+            cuenta.credito(new BigDecimal("100"));
+            assertEquals("1100.923", cuenta.getSaldo().toPlainString());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Test de ambiente")
+    class TestAmbiente {
+        @Test
+        @DisplayName("Imprimier datos de ambiente")
+        void imprimirVariablesAmbiente() {
+            System.getenv().forEach((k, v) -> System.out.println(k + ": " + v));
+        }
+
+
+        @Test
+        @DisplayName("Test procesadores8")
+        @EnabledIfEnvironmentVariable(named = "NUMBER_OF_PROCESSORS", matches = "8")
+        void testAmbienteProcesadores() {
+
+        }
     }
 
 }

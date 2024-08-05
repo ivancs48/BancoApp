@@ -145,10 +145,9 @@ class CuentaTest {
     }
 
     @Test
-    @DisplayName("Teste con propiedades")
+    @DisplayName("Imprimir propiedades")
     void imprimirPropiedades() {
-        Properties properties = System.getProperties();
-        properties.forEach((k, v) -> System.out.println(k + ": " + v));
+        System.getProperties().forEach((k, v) -> System.out.println(k + ": " + v));
     }
 
     @Test
@@ -164,4 +163,19 @@ class CuentaTest {
     void testPropiedad32() {
 
     }
+
+    @Test
+    @DisplayName("Imprimier datos de ambiente")
+    void imprimirVariablesAmbiente() {
+        System.getenv().forEach((k, v) -> System.out.println(k + ": " + v));
+    }
+
+
+    @Test
+    @DisplayName("Test procesadores8")
+    @EnabledIfEnvironmentVariable(named = "NUMBER_OF_PROCESSORS", matches = "8")
+    void testAmbienteProcesadores(){
+
+    }
+
 }

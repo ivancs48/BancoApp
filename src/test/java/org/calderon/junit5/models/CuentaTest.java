@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.Properties;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.*;
 
 class CuentaTest {
 
@@ -176,6 +177,32 @@ class CuentaTest {
     @EnabledIfEnvironmentVariable(named = "NUMBER_OF_PROCESSORS", matches = "8")
     void testAmbienteProcesadores(){
 
+    }
+
+    @Test
+    @DisplayName("Valida propiedad programacion")
+    void creditoCuentaJava20() {
+        boolean isJava20 = "20.0.1".equals(System.getProperty("java.version"));
+        assumeTrue(isJava20);
+        cuenta.setSaldo(new BigDecimal("1000.923"));
+        cuenta.credito(new BigDecimal("100"));
+        assertEquals("1100.923", cuenta.getSaldo().toPlainString());
+    }
+
+    @Test
+    @DisplayName("Valida propiedad programacion 2")
+    void creditoCuentaJava20_2() {
+        boolean isJava21 = "21.0.1".equals(System.getProperty("java.version"));
+        assumingThat(isJava21, () -> {
+            System.out.println("Ingresa validacion de java");
+            cuenta.setSaldo(new BigDecimal("1000.923"));
+            cuenta.credito(new BigDecimal("200"));
+            assertEquals(1200.923, cuenta.getSaldo().doubleValue());
+        });
+        System.out.println("Realiza proceso despues de validacion java");
+        cuenta.setSaldo(new BigDecimal("1000.923"));
+        cuenta.credito(new BigDecimal("100"));
+        assertEquals("1100.923", cuenta.getSaldo().toPlainString());
     }
 
 }

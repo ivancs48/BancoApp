@@ -223,4 +223,24 @@ class CuentaTest {
         }
     }
 
+    @RepeatedTest(5)
+    @DisplayName("Prueba repetida debito cuentas")
+    void debitoCuentaRepetido(RepetitionInfo info) {
+        cuenta.setSaldo(new BigDecimal("1000"));
+        if(info.getCurrentRepetition() == 3){
+            cuenta.setSaldo(new BigDecimal("100"));
+            System.out.println("Repeticion numero 3");
+        }
+
+        try {
+            cuenta.debito(new BigDecimal("100"));
+        } catch (DineroInsuficienteException e) {
+            System.out.println("Saldo insuficiente");
+        }
+        if(info.getCurrentRepetition() == 3) {
+            assertEquals(0, cuenta.getSaldo().intValue());
+        }else {
+            assertEquals(900, cuenta.getSaldo().intValue());
+        }
+    }
 }

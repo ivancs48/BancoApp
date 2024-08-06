@@ -9,7 +9,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
@@ -285,5 +287,29 @@ class CuentaTest {
         assertNotNull(cuenta.getPersona(), "Valor del nombre nulo");
         assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0, "Fallo por valor de la cuenta");
         assertEquals(esperado, cuenta.getPersona(), "Fallo por Nombre de la cuenta");
+    }
+
+    @Nested
+    class TestTimeOut {
+
+        @Test
+        @Timeout(5)
+        void pruebaTiempoSegundos() throws InterruptedException {
+            TimeUnit.SECONDS.sleep(6);
+        }
+
+        @Test
+        @Timeout(value = 500, unit = TimeUnit.MILLISECONDS)
+        void pruebaTiempoMilisegundos() throws InterruptedException {
+            TimeUnit.MILLISECONDS.sleep(60);
+        }
+
+        @Test
+        @Timeout(5)
+        void pruebaAssertTimeOut() {
+            assertTimeout(Duration.ofSeconds(5), () -> {
+                TimeUnit.MILLISECONDS.sleep(60);
+            });
+        }
     }
 }

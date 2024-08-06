@@ -3,6 +3,10 @@ package org.calderon.junit5.models;
 import org.calderon.junit5.exceptions.DineroInsuficienteException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.condition.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
 import java.util.Properties;
@@ -76,7 +80,8 @@ class CuentaTest {
     @DisplayName("Prueba de debitar valor mayor a cuenta")
     void testDineroInsuficiente() {
         cuenta.setSaldo(new BigDecimal("100"));
-        assertThrows(DineroInsuficienteException.class, () -> cuenta.debito(new BigDecimal("150")));
+        DineroInsuficienteException excepcion = assertThrows(DineroInsuficienteException.class, () -> cuenta.debito(new BigDecimal("150")));
+        assertEquals("No hay suficiente saldo en la cuenta", excepcion.getMessage());
     }
 
     @Test
@@ -242,5 +247,43 @@ class CuentaTest {
         }else {
             assertEquals(900, cuenta.getSaldo().intValue());
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"100", "200", "300", "500", "1000"})
+    @DisplayName("Prueba debito parametrizado")
+    void debitoCuentaParametrizada(String monto) {
+        try {
+            cuenta.debito(new BigDecimal(monto));
+        } catch (DineroInsuficienteException e) {
+            System.out.println("Saldo insuficiente");
+        }
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0);
+    }
+
+    @ParameterizedTest(name = "numero {index} ejecutado con valor {0} - {argumentsWithNames}")
+    @CsvSource({ "200,100,John,Andres", "250,200,Ivan,Ivan", "299,300,Ivan,Ivan","400,500,Ivan,Ivan", "750,700,Ivan,Ivan","1000.12345,1000.12345,Ivan,Ivan"})
+    void debitoCuentaParametrizadaCsv2(String saldo, String monto, String esperado, String actual) throws DineroInsuficienteException {
+        System.out.println(saldo + " -> " + monto);
+        cuenta.setPersona(actual);
+        cuenta.setSaldo(new BigDecimal(saldo));
+        cuenta.debito(new BigDecimal(monto));
+        assertNotNull(cuenta.getSaldo(), "Valor de la cuenta nula");
+        assertNotNull(cuenta.getPersona(), "Valor del nombre nulo");
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0, "Fallo por valor de la cuenta");
+        assertEquals(esperado, cuenta.getPersona(), "Fallo por Nombre de la cuenta");
+    }
+
+    @ParameterizedTest(name = "numero {index} ejecutado con valor {0} - {argumentsWithNames}")
+    @CsvFileSource(resources = "/data.csv")
+    void debitoCuentaParametrizadaCsv(String saldo, String monto, String esperado, String actual) throws DineroInsuficienteException {
+        System.out.println(saldo + " -> " + monto);
+        cuenta.setPersona(actual);
+        cuenta.setSaldo(new BigDecimal(saldo));
+        cuenta.debito(new BigDecimal(monto));
+        assertNotNull(cuenta.getSaldo(), "Valor de la cuenta nula");
+        assertNotNull(cuenta.getPersona(), "Valor del nombre nulo");
+        assertTrue(cuenta.getSaldo().compareTo(BigDecimal.ZERO) > 0, "Fallo por valor de la cuenta");
+        assertEquals(esperado, cuenta.getPersona(), "Fallo por Nombre de la cuenta");
     }
 }
